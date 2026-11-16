@@ -45,6 +45,8 @@ the supervision needed to train and evaluate a decision model.
   - `noul`: `statement` to judge; `gold` is a boolean.
   - `choice`: `options` (declared up front); `gold_index` indexes the correct option.
   - `score`: `rubric` + ordered `levels`; `gold_index` indexes the correct level.
+    The candidate being rated is included in the rubric text. The gold level alternates
+    between supported and contradicted candidates so the task is not constant.
 
 ## Conventions
 

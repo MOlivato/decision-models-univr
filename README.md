@@ -21,7 +21,9 @@ types are **Noul** (is it true?), **Choice** (one of N options) and **Score** (a
 ```
 notebooks/en|it/    zero-to-hero curriculum (identical code, translated prose)
 src/decision_qa/    reusable conversion, backend, evaluation and training code
+tests/              pipeline, metrics, notebook parity and character checks
 data/               schema docs and small regenerable samples
+docs/               free papers and saved blog posts as PDF
 configs/            backend configurations (hosted / local)
 ```
 
