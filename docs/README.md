@@ -1,11 +1,23 @@
 # Learning resources
 
-A local library of free, English learning material for the decision models project.
-Papers are open access from arXiv. Blog posts and documentation pages were saved as
-PDF from their public web pages. No paid account is needed to read any of them.
+A local library of 23 free, English learning resources for the decision models
+project: 11 open-access papers from arXiv and 12 public articles or documentation
+pages saved as PDF. No paid account is needed to read any of them.
 
-Start with the two audit papers (2609.32160 and 2609.37647), then the evaluation and
-calibration papers, then the security papers before starting the agent phase.
+## Reading paths
+
+**First week.** Read `2609.32160` (early evidence audit) and `2609.37647`
+(evaluation and benchmarking). Then read `typesafe-introduction` and
+`typesafe-patterns` to learn the three question types.
+
+**Before training.** Read `tev1-train-your-own-decision-model`, `strands-decider`,
+and `clef-decision-models`. They show how small open models are trained and served.
+
+**Before trusting probabilities.** Read `2609.33209` (Beyond Calibration),
+`2610.17016` (ProbabilityBench), `jev-measured`, and `jev-does-not-play-dice`.
+
+**Before the agent phase.** Read `2609.31142` (JevAdvBench) and `2609.33401`
+(agent security), then `2609.28940` and `2610.18272` for agent use cases.
 
 ## Papers
 
@@ -23,7 +35,8 @@ calibration papers, then the security papers before starting the agent phase.
 | [2610.18272.pdf](papers/2610.18272.pdf) | JevGPT: Thinking Fast and Slow in Autonomous Research | Decision model used for question answering over documents |
 | [2609.23986.pdf](papers/2609.23986.pdf) | Jev-Mem | Decision model controlling agent memory and retrieval |
 
-Each file is named with its arXiv identifier. The source is `https://arxiv.org/abs/<id>`.
+Each paper is named with its arXiv identifier. The source is
+`https://arxiv.org/abs/<id>`.
 
 ## Blog posts and documentation pages
 
@@ -48,5 +61,9 @@ Papers were downloaded directly from `https://arxiv.org/pdf/<id>`.
 Web pages were printed to PDF with headless Chromium from their public URLs.
 If a page changes, repeat the download to refresh the local copy.
 
-All files are for study. Please respect the licenses of the original sources when
-reusing any material.
+To add a new resource, save it under `papers/` or `blogs/`, add a row to the tables
+above with the source and a one-line reason, and keep it free to read. Update this
+README in the same commit.
+
+All files are for study. Each paper or page keeps the license of its original
+source; respect it when reusing any material.

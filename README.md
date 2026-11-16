@@ -1,65 +1,98 @@
 # decision-models-univr
 
-Thesis + internship material on **decision models** (System One / typed decision models),
-a collaboration between UniVR and the University of Brescia (Matteo Olivato).
+Thesis and internship material on **decision models** (System One / typed decision
+models), a collaboration between the University of Verona and the University of
+Brescia (Matteo Olivato).
 
-A decision model reads a *state* plus questions whose answers are declared up front and
-returns a probability for every answer instead of generated text. The three question
-types are **Noul** (is it true?), **Choice** (one of N options) and **Score** (an ordinal rubric).
+A decision model reads a *state* plus questions whose answers are declared up front
+and returns a probability for every answer instead of generated text. The three
+question types are **Noul** (is it true?), **Choice** (one of N options), and
+**Score** (an ordinal rubric).
 
-## Project briefs
+Everything in this repository is **free or open**: public datasets, open-weight
+models, open-source libraries, and open-access papers. The default backend is local,
+so no paid API key is required.
 
-- [English](brief_EN.md) / [Italiano](brief_IT.md)
+## Start here
 
-## Guides
-
-- [Guideline (EN)](GUIDELINE.md) / [Guida (IT)](GUIDA.md) / [Contributing](CONTRIBUTING.md)
-- [Learning resources (papers and blog PDFs)](docs/README.md)
+| Document | Purpose |
+|---|---|
+| [brief_EN.md](brief_EN.md) / [brief_IT.md](brief_IT.md) | Project aim, phases, and logistics |
+| [GUIDELINE.md](GUIDELINE.md) | Working rules and quality bar (English) |
+| [GUIDA.md](GUIDA.md) | Step-by-step student guide (Italian) |
+| [docs/README.md](docs/README.md) | Free papers and saved articles as PDF |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution rules |
+| [data/SCHEMA.md](data/SCHEMA.md) | Decision-dataset JSONL schema |
 
 ## Layout
 
 ```
 notebooks/en|it/    zero-to-hero curriculum (identical code, translated prose)
-src/decision_qa/    reusable conversion, backend, evaluation and training code
-tests/              pipeline, metrics, notebook parity and character checks
-data/               schema docs and small regenerable samples
+src/decision_qa/    backends, question types, conversion, evaluation, training
+tests/              pipeline, metrics, notebook parity, and character checks
+data/               schema documentation and small regenerable samples
 docs/               free papers and saved blog posts as PDF
-configs/            backend configurations (hosted / local)
+configs/            backend configurations (local and free hosted)
 ```
 
 ## Curriculum
 
-| # | Notebook | Goal |
-|---|---|---|
-| 00 | Setup and first decision | Install, configure a backend, make a first call |
-| 01 | Question paradigms | Noul, Choice, Score; confidence and invariance |
-| 02 | Hosted vs open vs logits | Compare the operational approaches |
-| 03 | QA -> decision dataset | Convert PubMedQA and Banking77 to the target schema |
-| 04 | Train a small model | LoRA fine-tune on the converted data |
-| 05 | Evaluate and calibrate | Accuracy, Brier, ECE, thresholds |
-| 06 | Agent / RL bridge | From typed decisions to an agent loop |
+| # | Notebook | Goal | Output |
+|---|---|---|---|
+| 00 | Setup and first decision | Configure a backend and make a first call | A probability distribution |
+| 01 | Question paradigms | Noul, Choice, Score; confidence and invariance | Validated question types |
+| 02 | Local, hosted, and logits | Compare the operational approaches | A backend choice |
+| 03 | QA to decision dataset | Convert PubMedQA and Banking77 | `data/*_decisions.jsonl` |
+| 04 | Train a small model | LoRA fine-tune on the converted data | `checkpoints/dm-lora` |
+| 05 | Evaluate and calibrate | Accuracy, Brier, ECE, thresholds | Metrics and a cutoff |
+| 06 | Agent and RL bridge | Typed decisions inside an agent loop | A reward trace |
 
-## Setup (uv)
+Every notebook exists in `notebooks/en/` and `notebooks/it/` with the same code
+cells and translated markdown.
+
+## Setup with uv
 
 ```bash
-uv python install 3.12
-uv sync                         # base + dev environment in .venv
-uv sync --extra train           # add torch/transformers/peft for notebook 04
-cp .env.example .env            # local by default; free route only if hosted
+uv python install 3.12          # once, if Python 3.12 is not available
+uv sync                         # base and dev environment in .venv
+uv sync --extra train           # optional, only for notebook 04
+cp .env.example .env            # local backend by default
 uv run jupyter lab
 ```
 
-Run code directly with `uv run python ...`. The project is installed editable, so
-`import decision_qa` works from notebooks and scripts.
+Run scripts with `uv run python ...`. The project is installed in editable mode, so
+`import decision_qa` works from notebooks, tests, and scripts.
+
+## Data flow
+
+1. `load_examples` reads a free public dataset, or the bundled sample when offline.
+2. `convert_pubmedqa` and `convert_banking77` create typed Noul, Choice, and Score questions.
+3. `build_dataset` writes JSONL in the schema from `data/SCHEMA.md`.
+4. Notebook 04 trains on that JSONL and notebook 05 evaluates the probabilities.
+
+## Quality checks
+
+```bash
+uv run ruff format src tests
+uv run ruff check src tests
+uv run pytest -q
+```
+
+The test suite covers the conversion pipeline, metrics, response parsing, EN/IT
+notebook code parity, and the ban on uncommon characters.
+
+## Troubleshooting
+
+- **No local model running**: notebooks use `MockClient`, which is deterministic and offline.
+- **Hugging Face unavailable**: the loader falls back to the tiny samples in `data/samples/`.
+- **Wrong endpoint**: check the `base_url` in `configs/` and see `cfg.endpoint`.
+- **Training extra missing**: run `uv sync --extra train`, then set `RUN_TRAINING = True`.
 
 ## Resources
 
-Everything here is **free or open**: public datasets (PubMedQA, Banking77), open-weight
-models (Laya, Kev, Tev1, minimind-jev), open-source runtimes (Ollama, llama.cpp) and
-free papers/docs. No paid API key is required - the local backend is the default.
-
-Start from the curated [awesome-decision-models](https://github.com/AnotiaWang/awesome-decision-models)
-list; free entry points are the [concept docs](https://docs.typesafe.ai/introduction),
-the [Milvus cookbook](https://github.com/milvus-io/bootcamp/tree/master/bootcamp/RAG/search_with_jev),
-[awesome-jev-prompts](https://github.com/vicfei/awesome-jev-prompts), and the open-access
-papers linked in notebook 05.
+- Local library: [docs/README.md](docs/README.md) with free arXiv papers and saved articles.
+- Curated ecosystem: [awesome-decision-models](https://github.com/AnotiaWang/awesome-decision-models).
+- Concept docs: [TypeSafe introduction](https://docs.typesafe.ai/introduction).
+- Hands-on cookbook: [Milvus search with Jev](https://github.com/milvus-io/bootcamp/tree/master/bootcamp/RAG/search_with_jev).
+- Question patterns: [awesome-jev-prompts](https://github.com/vicfei/awesome-jev-prompts).
+- Evaluation: [JevBench](https://github.com/fstandhartinger/jevbench) under MIT.
