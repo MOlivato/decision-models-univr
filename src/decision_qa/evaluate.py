@@ -2,44 +2,84 @@
 
 from __future__ import annotations
 
+import random
 from collections.abc import Sequence
 from itertools import pairwise
 
 import numpy as np
 
 from .backends import DecisionResult
-from .questions import NoulQuestion, Question
+from .distractors import shuffle_with_gold
+from .questions import ChoiceQuestion, NoulQuestion, Question, ScoreQuestion
+
+
+def gold_label(question: Question) -> str:
+    """Return the text of the correct answer for one question."""
+    if isinstance(question, NoulQuestion):
+        if question.gold is None:
+            raise ValueError("Noul question has no gold label")
+        return "true" if question.gold else "false"
+    if isinstance(question, ChoiceQuestion):
+        options = question.options
+    elif isinstance(question, ScoreQuestion):
+        options = question.levels
+    else:
+        raise TypeError(f"Unsupported question type: {type(question).__name__}")
+    if question.gold_index is None:
+        raise ValueError("Question has no gold index")
+    if not 0 <= question.gold_index < len(options):
+        raise ValueError("gold_index is outside the declared options")
+    return options[question.gold_index]
 
 
 def gold_probability(result: DecisionResult, question: Question) -> float:
     """Probability the model assigned to the gold answer of one question."""
-    if isinstance(question, NoulQuestion):
-        key = "true" if question.gold else "false"
-    else:
-        key = (
-            question.options[question.gold_index]
-            if hasattr(question, "options")
-            else question.levels[question.gold_index]
-        )
-    return float(result.probabilities.get(key, 0.0))
+    return float(result.probabilities.get(gold_label(question), 0.0))
+
+
+def predicted_label(result: DecisionResult) -> str:
+    """The answer with the highest probability. Ties go to the first label."""
+    if not result.probabilities:
+        raise ValueError("Result has no probabilities")
+    return max(result.probabilities, key=result.probabilities.get)
+
+
+def accuracy(results: Sequence[DecisionResult], questions: Sequence[Question]) -> float:
+    """Fraction of questions where the top answer is the gold answer.
+
+    Ties count as wrong unless the gold label happens to be first. This avoids the
+    inflated accuracy that a simple `gold >= max` check produces on uniform output.
+    """
+    if len(results) != len(questions):
+        raise ValueError("results and questions must have the same length")
+    if not results:
+        return 0.0
+    hits = sum(predicted_label(result) == gold_label(question) for result, question in zip(results, questions))
+    return hits / len(results)
 
 
 def brier(probabilities: Sequence[float]) -> float:
-    """Mean Brier score of the gold answers (lower is better)."""
+    """Mean binary Brier score of the gold probabilities (lower is better)."""
     values = np.asarray(probabilities, dtype=float)
     return float(np.mean((1.0 - values) ** 2)) if len(values) else 0.0
 
 
-def accuracy(results: Sequence[DecisionResult], questions: Sequence[Question]) -> float:
-    """Fraction of questions whose gold answer is the model's top answer."""
+def brier_multiclass(
+    results: Sequence[DecisionResult], questions: Sequence[Question]
+) -> float:
+    """Proper multiclass Brier score: mean of the squared error over all labels."""
+    if len(results) != len(questions):
+        raise ValueError("results and questions must have the same length")
     if not results:
         return 0.0
-    hits = 0
+    total = 0.0
     for result, question in zip(results, questions):
-        gold = gold_probability(result, question)
-        top = max(result.probabilities.values())
-        hits += int(gold >= top - 1e-12)
-    return hits / len(results)
+        expected = gold_label(question)
+        total += sum(
+            (probability - (1.0 if label == expected else 0.0)) ** 2
+            for label, probability in result.probabilities.items()
+        )
+    return total / len(results)
 
 
 def reliability(
@@ -48,6 +88,8 @@ def reliability(
     """Bin predictions by confidence; return observed vs predicted accuracy per bin."""
     conf = np.asarray(confidences, dtype=float)
     corr = np.asarray(correct, dtype=int)
+    if len(conf) != len(corr):
+        raise ValueError("confidences and correct must have the same length")
     edges = np.linspace(0.0, 1.0, bins + 1)
     out = []
     for lo, hi in pairwise(edges):
@@ -65,31 +107,37 @@ def reliability(
 
 
 def ece(confidences: Sequence[float], correct: Sequence[int], bins: int = 10) -> float:
-    """Expected calibration error (lower is better)."""
+    """Expected calibration error of the predicted confidences (lower is better)."""
     rows = reliability(confidences, correct, bins)
     if not rows:
         return 0.0
-    total = sum(r["count"] for r in rows)
-    return float(sum(r["count"] * abs(r["confidence"] - r["accuracy"]) for r in rows) / total)
+    total = sum(row["count"] for row in rows)
+    return float(
+        sum(row["count"] * abs(row["confidence"] - row["accuracy"]) for row in rows) / total
+    )
 
 
 def fit_threshold(
     confidences: Sequence[float], correct: Sequence[int], target_precision: float = 0.9
 ) -> float:
-    """Lowest confidence cutoff reaching target precision on a validation split.
+    """Lowest confidence cutoff that reaches target precision.
 
     Predictions below the cutoff should be escalated to a stronger model or a human.
+    Returning the lowest qualifying cutoff keeps as much coverage as possible.
     """
     conf = np.asarray(confidences, dtype=float)
     corr = np.asarray(correct, dtype=int)
-    best = 1.0
+    if len(conf) != len(corr):
+        raise ValueError("confidences and correct must have the same length")
+    if len(conf) == 0:
+        return 1.0
     for cutoff in np.linspace(0.0, 1.0, 101):
         mask = conf >= cutoff
         if mask.sum() == 0:
             break
         if corr[mask].mean() >= target_precision:
-            best = float(cutoff)
-    return best
+            return float(cutoff)
+    return 1.0
 
 
 def option_order_invariance(
@@ -97,20 +145,16 @@ def option_order_invariance(
     state: dict,
     question: Question,
     permutations: int = 5,
-) -> float:
-    """How often the top answer stays the same when option order changes."""
-    import random
-
-    from .distractors import shuffle_with_gold
-    from .questions import ChoiceQuestion
-
+) -> bool:
+    """True when the top answer stays the same across option permutations."""
     if not isinstance(question, ChoiceQuestion):
-        return 1.0
+        return True
     rng = random.Random(0)
     tops = []
     for _ in range(permutations):
-        options, new_gold = shuffle_with_gold(question.options, question.gold_index or 0, rng)
+        gold = question.gold_index if question.gold_index is not None else 0
+        options, new_gold = shuffle_with_gold(question.options, gold, rng)
         variant = ChoiceQuestion(label=question.label, options=options, gold_index=new_gold)
         result = client.decision(state, [variant])[0]
-        tops.append(max(result.probabilities, key=result.probabilities.get))
+        tops.append(predicted_label(result))
     return len(set(tops)) == 1

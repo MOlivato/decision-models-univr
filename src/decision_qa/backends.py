@@ -18,11 +18,17 @@ class DecisionResult(BaseModel):
     raw: dict[str, Any] | None = None
 
 
+def _uniform(labels: list[str]) -> dict[str, float]:
+    return {label: 1.0 / len(labels) for label in labels}
+
+
 def _normalize(values: dict[str, float]) -> dict[str, float]:
-    total = sum(values.values())
+    if not values:
+        return {}
+    total = sum(value for value in values.values() if value > 0)
     if total <= 0:
-        return {k: 1.0 / len(values) for k in values}
-    return {k: v / total for k, v in values.items()}
+        return _uniform(list(values))
+    return {label: max(0.0, value) / total for label, value in values.items()}
 
 
 def _answers_from(data: Any) -> list[Any]:
@@ -37,19 +43,32 @@ def _answers_from(data: Any) -> list[Any]:
     return []
 
 
+def _as_float(value: Any) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
+
+
 def _probabilities_from(item: Any, labels: list[str]) -> dict[str, float]:
+    """Read a probability dictionary from one answer, tolerating common shapes."""
     if isinstance(item, dict):
         for key in ("probabilities", "distribution", "scores", "probs"):
             value = item.get(key)
             if isinstance(value, dict):
-                return _normalize({str(k): float(v) for k, v in value.items()})
+                return {str(label): _as_float(probability) for label, probability in value.items()}
             if isinstance(value, list):
-                return _normalize(dict(zip(labels, (float(v) for v in value))))
-        if item.get("label") in labels and "probability" in item:
+                return {
+                    label: _as_float(probability)
+                    for label, probability in zip(labels, value)
+                }
+        if item.get("label") is not None and "probability" in item:
             chosen = str(item["label"])
-            other = 1.0 - float(item["probability"])
-            return _normalize({chosen: float(item["probability"]), **{l: other for l in labels if l != chosen}})
-    return _normalize({label: 1.0 for label in labels})
+            others = [label for label in labels if label != chosen]
+            leftover = max(0.0, 1.0 - _as_float(item["probability"]))
+            share = leftover / len(others) if others else 0.0
+            return {chosen: _as_float(item["probability"]), **{label: share for label in others}}
+    return {}
 
 
 class SystemOneClient:
@@ -71,32 +90,52 @@ class SystemOneClient:
             timeout=self.config.timeout,
         )
         response.raise_for_status()
-        data = response.json()
-        return self._parse(data, questions)
+        return self._parse(response.json(), questions)
 
     @staticmethod
     def _parse(data: Any, questions: list[Question]) -> list[DecisionResult]:
         answers = _answers_from(data)
+        by_label = {
+            str(answer["label"]): answer
+            for answer in answers
+            if isinstance(answer, dict) and answer.get("label") is not None
+        }
         results: list[DecisionResult] = []
-        for i, question in enumerate(questions):
+        for index, question in enumerate(questions):
             labels = question_labels(question)
-            item = answers[i] if i < len(answers) else None
-            probs = _probabilities_from(item, labels)
-            # Keep only the declared answers, in declared order.
-            probs = _normalize({label: probs.get(label, probs.get(str(i), 1.0)) for i, label in enumerate(labels)})
-            results.append(DecisionResult(question_label=question.label, probabilities=probs, raw=item))
+            item = by_label.get(question.label)
+            if item is None and index < len(answers):
+                item = answers[index]
+            probabilities = _probabilities_from(item, labels)
+            probabilities = _normalize(
+                {label: probabilities.get(label, 0.0) for label in labels}
+            )
+            results.append(
+                DecisionResult(
+                    question_label=question.label,
+                    probabilities=probabilities,
+                    raw=item,
+                )
+            )
         return results
 
 
 class MockClient:
-    """Deterministic, key-free stand-in. Uses gold labels when present; otherwise uniform.
+    """Deterministic, key-free stand-in for demos and tests.
 
-    It lets every notebook run offline and for free, and makes the data pipeline testable.
+    It uses the gold labels when present, matches them with probability
+    `1 - error_rate`, and returns uniform probabilities when no gold is available.
+    Higher `quality` produces more confident outputs.
     """
 
-    def __init__(self, seed: int = 42, quality: float = 0.85):
+    def __init__(self, seed: int = 42, quality: float = 0.85, error_rate: float = 0.0):
         self.rng = random.Random(seed)
+        if not 0.0 <= quality <= 1.0:
+            raise ValueError("quality must be between 0 and 1")
+        if not 0.0 <= error_rate <= 1.0:
+            raise ValueError("error_rate must be between 0 and 1")
         self.quality = quality
+        self.error_rate = error_rate
 
     def decision(self, state: dict, questions: list[Question]) -> list[DecisionResult]:
         results = []
@@ -109,12 +148,25 @@ class MockClient:
                 gold_label = labels[question.gold_index]
 
             if gold_label is None:
-                probs = _normalize({label: 1.0 for label in labels})
+                probabilities = _uniform(labels)
             else:
-                p = min(0.99, max(0.5, self.quality + self.rng.uniform(-0.05, 0.05)))
+                others = [label for label in labels if label != gold_label]
+                floor = 1.0 / len(labels) + 0.02
+                if others and self.rng.random() < self.error_rate:
+                    # Simulate a wrong but confident choice.
+                    chosen = self.rng.choice(others)
+                    p = self.quality - self.rng.uniform(0.05, 0.25)
+                else:
+                    chosen = gold_label
+                    p = self.quality + self.rng.uniform(0.0, 0.15)
+                p = min(0.99, max(floor, p))
                 rest = (1.0 - p) / max(1, len(labels) - 1)
-                probs = {label: (p if label == gold_label else rest) for label in labels}
-            results.append(DecisionResult(question_label=question.label, probabilities=probs))
+                probabilities = {
+                    label: (p if label == chosen else rest) for label in labels
+                }
+            results.append(
+                DecisionResult(question_label=question.label, probabilities=probabilities)
+            )
         return results
 
 

@@ -12,7 +12,7 @@ class NoulQuestion(BaseModel):
 
     type: Literal["noul"] = "noul"
     label: str = "statement"
-    statement: str
+    statement: str = Field(min_length=1)
     gold: bool | None = None
 
 
@@ -21,7 +21,7 @@ class ChoiceQuestion(BaseModel):
 
     type: Literal["choice"] = "choice"
     label: str = "answer"
-    options: list[str]
+    options: list[str] = Field(min_length=1)
     gold_index: int | None = None
 
 
@@ -30,8 +30,8 @@ class ScoreQuestion(BaseModel):
 
     type: Literal["score"] = "score"
     label: str = "score"
-    rubric: str
-    levels: list[str]
+    rubric: str = Field(min_length=1)
+    levels: list[str] = Field(min_length=1)
     gold_index: int | None = None
 
 
@@ -47,7 +47,7 @@ class DecisionRecord(BaseModel):
     source: str
     split: str = "train"
     state: dict
-    questions: list[Question]
+    questions: list[Question] = Field(min_length=1)
 
 
 def to_systemone_payload(state: dict, questions: list[Question]) -> dict:

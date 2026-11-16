@@ -27,6 +27,8 @@ class BackendConfig:
     @property
     def endpoint(self) -> str:
         base = self.base_url.rstrip("/")
+        if base.endswith("/v1/systemone"):
+            return base
         base = base.removesuffix("/v1")
         return f"{base}/v1/systemone"
 

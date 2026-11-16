@@ -18,12 +18,13 @@ def _prompt_and_answer(record: DecisionRecord) -> tuple[str, str] | None:
     question = next((q for q in record.questions if isinstance(q, ChoiceQuestion)), None)
     if question is None or question.gold_index is None:
         return None
-    state = "\n".join(f"{k}: {v}" for k, v in record.state.items())
+    state = "\n".join(f"{key}: {value}" for key, value in record.state.items())
     options = "\n".join(
-        f"{chr(65 + i)}) {option}" for i, option in enumerate(question.options)
+        f"{chr(65 + index)}) {option}" for index, option in enumerate(question.options)
     )
+    task = record.state.get("question", question.label)
     prompt = (
-        "### State\n" + state + "\n\n### Question\n" + question.label
+        "### State\n" + state + "\n\n### Question\n" + task
         + "\n\n### Options\n" + options + "\n\n### Answer"
     )
     return prompt, " " + chr(65 + question.gold_index)
@@ -73,8 +74,11 @@ def train(
             prompt, answer = pairs[idx]
             prompt_ids = tokenizer(prompt, add_special_tokens=True)["input_ids"]
             answer_ids = tokenizer(answer, add_special_tokens=False)["input_ids"]
-            input_ids = (prompt_ids + answer_ids)[-max_length:]
-            labels = ([-100] * len(prompt_ids) + answer_ids)[-max_length:]
+            # Reserve room for the answer: truncate the prompt, never the label.
+            keep = max(0, max_length - len(answer_ids))
+            prompt_ids = prompt_ids[-keep:] if keep else []
+            input_ids = prompt_ids + answer_ids
+            labels = [-100] * len(prompt_ids) + answer_ids
             return {
                 "input_ids": input_ids,
                 "attention_mask": [1] * len(input_ids),
