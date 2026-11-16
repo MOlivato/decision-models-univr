@@ -54,7 +54,10 @@ def accuracy(results: Sequence[DecisionResult], questions: Sequence[Question]) -
         raise ValueError("results and questions must have the same length")
     if not results:
         return 0.0
-    hits = sum(predicted_label(result) == gold_label(question) for result, question in zip(results, questions))
+    hits = sum(
+        predicted_label(result) == gold_label(question)
+        for result, question in zip(results, questions)
+    )
     return hits / len(results)
 
 
@@ -64,9 +67,7 @@ def brier(probabilities: Sequence[float]) -> float:
     return float(np.mean((1.0 - values) ** 2)) if len(values) else 0.0
 
 
-def brier_multiclass(
-    results: Sequence[DecisionResult], questions: Sequence[Question]
-) -> float:
+def brier_multiclass(results: Sequence[DecisionResult], questions: Sequence[Question]) -> float:
     """Proper multiclass Brier score: mean of the squared error over all labels."""
     if len(results) != len(questions):
         raise ValueError("results and questions must have the same length")
@@ -82,9 +83,7 @@ def brier_multiclass(
     return total / len(results)
 
 
-def reliability(
-    confidences: Sequence[float], correct: Sequence[int], bins: int = 10
-) -> list[dict]:
+def reliability(confidences: Sequence[float], correct: Sequence[int], bins: int = 10) -> list[dict]:
     """Bin predictions by confidence; return observed vs predicted accuracy per bin."""
     conf = np.asarray(confidences, dtype=float)
     corr = np.asarray(correct, dtype=int)

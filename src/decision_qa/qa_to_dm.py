@@ -51,9 +51,7 @@ def _read_sample(dataset: str, split: str) -> list[QaExample]:
     if not path.exists():
         return []
     rows = [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
     return [QaExample(**row) for row in rows]
 
@@ -63,9 +61,7 @@ def _load_hf(dataset: str, split: str) -> list[QaExample]:
 
     cache_dir = _cache_dir()
     if dataset == "pubmedqa":
-        ds = load_dataset(
-            "qiaojin/PubMedQA", "pqa_labeled", split=split, cache_dir=cache_dir
-        )
+        ds = load_dataset("qiaojin/PubMedQA", "pqa_labeled", split=split, cache_dir=cache_dir)
         rows = []
         for index, row in enumerate(ds):
             ctx = row.get("context")
@@ -103,9 +99,7 @@ def _load_hf(dataset: str, split: str) -> list[QaExample]:
     raise ValueError(f"Unknown dataset: {dataset}")
 
 
-def _partition(
-    rows: list[QaExample], split: str, limit: int, seed: int
-) -> list[QaExample]:
+def _partition(rows: list[QaExample], split: str, limit: int, seed: int) -> list[QaExample]:
     """Deterministically split one pool into train/val/test without overlap."""
     pool = list(rows)
     random.Random(seed).shuffle(pool)
@@ -286,6 +280,4 @@ def read_jsonl(path: str | Path) -> list[DecisionRecord]:
     if not path.is_absolute():
         path = ROOT / path
     lines = path.read_text(encoding="utf-8").splitlines()
-    return [
-        DecisionRecord.model_validate_json(line) for line in lines if line.strip()
-    ]
+    return [DecisionRecord.model_validate_json(line) for line in lines if line.strip()]

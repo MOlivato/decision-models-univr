@@ -7,6 +7,7 @@ Keep it minimal and clean.
   identical** and translate only the markdown prose.
 - Reusable code goes in `src/decision_qa/`, not in notebook cells.
 - Never commit `.env`, API keys, checkpoints, or downloaded datasets.
-- Run `uv run ruff check src` and `uv run pytest -q` before opening a PR.
+- Format with `uv run ruff format src tests`, then run `uv run ruff check src tests`
+  and `uv run pytest -q` before opening a PR.
 - Agent-specific local notes belong in the gitignored `AGENTS.md`, which is local
   only and intentionally shadowed online.

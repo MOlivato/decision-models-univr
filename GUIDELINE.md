@@ -36,7 +36,8 @@ uv run jupyter lab
    and `05` consume.
 2. Run offline (`MockClient`) until a local free endpoint is available, then switch
    to `SystemOneClient` - the interface is the same.
-3. Before committing: `uv run ruff check src tests` and `uv run pytest -q`.
+3. Before committing: `uv run ruff format src tests`, `uv run ruff check src tests`
+   and `uv run pytest -q`.
 4. Execute every changed notebook's code cells in both language folders.
 
 ## Quality bar

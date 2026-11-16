@@ -44,3 +44,9 @@ packages = ["src/decision_qa"]
 [tool.ruff]
 line-length = 100
 src = ["src"]
+target-version = "py311"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"

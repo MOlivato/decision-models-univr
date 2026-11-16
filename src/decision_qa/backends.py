@@ -58,10 +58,7 @@ def _probabilities_from(item: Any, labels: list[str]) -> dict[str, float]:
             if isinstance(value, dict):
                 return {str(label): _as_float(probability) for label, probability in value.items()}
             if isinstance(value, list):
-                return {
-                    label: _as_float(probability)
-                    for label, probability in zip(labels, value)
-                }
+                return {label: _as_float(probability) for label, probability in zip(labels, value)}
         if item.get("label") is not None and "probability" in item:
             chosen = str(item["label"])
             others = [label for label in labels if label != chosen]
@@ -107,9 +104,7 @@ class SystemOneClient:
             if item is None and index < len(answers):
                 item = answers[index]
             probabilities = _probabilities_from(item, labels)
-            probabilities = _normalize(
-                {label: probabilities.get(label, 0.0) for label in labels}
-            )
+            probabilities = _normalize({label: probabilities.get(label, 0.0) for label in labels})
             results.append(
                 DecisionResult(
                     question_label=question.label,
@@ -161,9 +156,7 @@ class MockClient:
                     p = self.quality + self.rng.uniform(0.0, 0.15)
                 p = min(0.99, max(floor, p))
                 rest = (1.0 - p) / max(1, len(labels) - 1)
-                probabilities = {
-                    label: (p if label == chosen else rest) for label in labels
-                }
+                probabilities = {label: (p if label == chosen else rest) for label in labels}
             results.append(
                 DecisionResult(question_label=question.label, probabilities=probabilities)
             )

@@ -35,9 +35,7 @@ class ScoreQuestion(BaseModel):
     gold_index: int | None = None
 
 
-Question = Annotated[
-    NoulQuestion | ChoiceQuestion | ScoreQuestion, Field(discriminator="type")
-]
+Question = Annotated[NoulQuestion | ChoiceQuestion | ScoreQuestion, Field(discriminator="type")]
 
 
 class DecisionRecord(BaseModel):
@@ -59,9 +57,7 @@ def to_systemone_payload(state: dict, questions: list[Question]) -> dict:
         elif isinstance(q, ChoiceQuestion):
             payload_questions.append({"type": "choice", "options": q.options})
         else:
-            payload_questions.append(
-                {"type": "score", "rubric": q.rubric, "levels": q.levels}
-            )
+            payload_questions.append({"type": "score", "rubric": q.rubric, "levels": q.levels})
     return {"state": state, "questions": payload_questions}
 
 

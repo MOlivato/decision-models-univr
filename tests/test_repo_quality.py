@@ -19,7 +19,17 @@ def test_notebook_code_parity():
 
 
 def test_no_uncommon_characters():
-    allowed_suffixes = {".md", ".py", ".toml", ".yaml", ".yml", ".json", ".ipynb", ".example", ".gitignore"}
+    allowed_suffixes = {
+        ".md",
+        ".py",
+        ".toml",
+        ".yaml",
+        ".yml",
+        ".json",
+        ".ipynb",
+        ".example",
+        ".gitignore",
+    }
     for path in ROOT.rglob("*"):
         if not path.is_file():
             continue

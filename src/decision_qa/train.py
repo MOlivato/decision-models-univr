@@ -24,8 +24,13 @@ def _prompt_and_answer(record: DecisionRecord) -> tuple[str, str] | None:
     )
     task = record.state.get("question", question.label)
     prompt = (
-        "### State\n" + state + "\n\n### Question\n" + task
-        + "\n\n### Options\n" + options + "\n\n### Answer"
+        "### State\n"
+        + state
+        + "\n\n### Question\n"
+        + task
+        + "\n\n### Options\n"
+        + options
+        + "\n\n### Answer"
     )
     return prompt, " " + chr(65 + question.gold_index)
 

@@ -44,7 +44,8 @@ stesse celle di codice: modifica sempre entrambe.
 
 - Non committare mai `.env`, chiavi, dataset scaricati o checkpoint.
 - Il codice riutilizzabile va in `src/decision_qa/`, non nelle celle.
-- Prima di ogni commit: `uv run ruff check src tests` e `uv run pytest -q`.
+- Prima di ogni commit: `uv run ruff format src tests`, `uv run ruff check src tests`
+  e `uv run pytest -q`.
 - `AGENTS.md` è locale e gitignorato: non aggiungerlo forzatamente al repository.
 
 ## Riferimenti utili
