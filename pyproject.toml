@@ -1,0 +1,46 @@
+[project]
+name = "decision-models-univr"
+version = "0.1.0"
+description = "Decision models: learn the paradigms, turn QA data into decision data, train and evaluate."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "datasets>=3.2",
+    "ipykernel>=6.29",
+    "jupyter>=1.1",
+    "matplotlib>=3.9",
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "pydantic>=2.9",
+    "python-dotenv>=1.0",
+    "pyyaml>=6.0",
+    "requests>=2.32",
+    "scikit-learn>=1.5",
+    "scipy>=1.13",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+train = [
+    "accelerate>=0.34",
+    "peft>=0.13",
+    "torch>=2.4",
+    "transformers>=4.45",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.7",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/decision_qa"]
+
+[tool.ruff]
+line-length = 100
+src = ["src"]

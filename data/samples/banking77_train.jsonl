@@ -1,0 +1,6 @@
+{"id": "banking77-train-0", "source": "banking77", "context": "I lost my card yesterday, how do I block it?", "question": "What is the user's intent?", "answer": "lost_or_stolen_card", "label": "lost_or_stolen_card"}
+{"id": "banking77-train-1", "source": "banking77", "context": "Can you tell me the exchange rate for GBP to EUR today?", "question": "What is the user's intent?", "answer": "exchange_rate", "label": "exchange_rate"}
+{"id": "banking77-train-2", "source": "banking77", "context": "My monthly salary payment has not arrived yet.", "question": "What is the user's intent?", "answer": "salary_payment_not_received", "label": "salary_payment_not_received"}
+{"id": "banking77-train-3", "source": "banking77", "context": "I need to update my phone number in my profile.", "question": "What is the user's intent?", "answer": "change_personal_information", "label": "change_personal_information"}
+{"id": "banking77-train-4", "source": "banking77", "context": "What is the cash withdrawal limit at an ATM?", "question": "What is the user's intent?", "answer": "atm_limit", "label": "atm_limit"}
+{"id": "banking77-train-5", "source": "banking77", "context": "The verification code you sent does not work.", "question": "What is the user's intent?", "answer": "verify_code_not_received", "label": "verify_code_not_received"}

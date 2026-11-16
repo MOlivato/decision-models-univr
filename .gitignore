@@ -1,0 +1,18 @@
+# Local-only agent instructions: active in this workspace, absent from the online repo.
+AGENTS.md
+
+# Python / notebooks
+__pycache__/
+*.py[cod]
+.venv/
+.ipynb_checkpoints/
+
+# Secrets and local config
+.env
+
+# Generated data and logs
+data/raw/
+data/*_decisions.jsonl
+checkpoints/
+.cache/
+*.log

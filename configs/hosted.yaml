@@ -1,0 +1,6 @@
+# Free hosted route only (OpenRouter free tier). Never configure a paid key here.
+backend: hosted
+base_url: https://openrouter.ai/api/v1
+model: inception/mercury-decide
+api_key_env: DM_API_KEY
+timeout: 30

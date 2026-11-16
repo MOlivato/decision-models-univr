@@ -1,0 +1,2 @@
+{"id": "banking77-test-0", "source": "banking77", "context": "How do I set up a standing order for my rent?", "question": "What is the user's intent?", "answer": "set_up_direct_debit", "label": "set_up_direct_debit"}
+{"id": "banking77-test-1", "source": "banking77", "context": "My card was declined at the supermarket but I have enough funds.", "question": "What is the user's intent?", "answer": "card_payment_declined", "label": "card_payment_declined"}

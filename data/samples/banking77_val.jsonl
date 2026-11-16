@@ -1,0 +1,2 @@
+{"id": "banking77-val-0", "source": "banking77", "context": "I want to close my savings account please.", "question": "What is the user's intent?", "answer": "closing_account", "label": "closing_account"}
+{"id": "banking77-val-1", "source": "banking77", "context": "Where can I find my latest bank statement?", "question": "What is the user's intent?", "answer": "get_bank_statement", "label": "get_bank_statement"}
