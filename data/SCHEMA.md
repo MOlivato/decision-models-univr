@@ -38,10 +38,10 @@ the supervision needed to train and evaluate a decision model.
 
 ## Fields
 
-- `id`, `source`, `split` — provenance and split (`train` / `val` / `test`).
-- `state` — the information the model conditions on. `context` may be a string or an
+- `id`, `source`, `split` - provenance and split (`train` / `val` / `test`).
+- `state` - the information the model conditions on. `context` may be a string or an
   object; `question` is the task question.
-- `questions` — a list of typed questions:
+- `questions` - a list of typed questions:
   - `noul`: `statement` to judge; `gold` is a boolean.
   - `choice`: `options` (declared up front); `gold_index` indexes the correct option.
   - `score`: `rubric` + ordered `levels`; `gold_index` indexes the correct level.

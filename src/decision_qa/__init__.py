@@ -16,6 +16,7 @@ from .questions import (
     DecisionRecord,
     NoulQuestion,
     ScoreQuestion,
+    question_labels,
     to_systemone_payload,
 )
 
@@ -38,6 +39,7 @@ __all__ = [
     "load_config",
     "load_examples",
     "make_client",
+    "question_labels",
     "read_jsonl",
     "to_systemone_payload",
 ]

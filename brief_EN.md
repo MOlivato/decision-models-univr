@@ -1,12 +1,12 @@
-# Project brief — Decision Models (EN)
+# Project brief - Decision Models (EN)
 
 **Title.** Thesis and internship on decision models, a collaboration between the
 University of Verona and the University of Brescia.
 
 ## Context and aim
 
-Elia, Alessandro and Matteo Olivato — a researcher at the University of Brescia and a
-former collaborator of Alessandro — are exploring a joint thesis and internship
+Elia, Alessandro and Matteo Olivato - a researcher at the University of Brescia and a
+former collaborator of Alessandro - are exploring a joint thesis and internship
 centred on **decision models**. The work starts with a learning phase and proceeds to
 an application phase in which decision models are used for the automatic execution
 of a task by an agent, most likely in connection with Reinforcement Learning (to be
@@ -17,11 +17,11 @@ a question-answering dataset.
 
 ## Work plan
 
-**Phase 1 — Learning.** Study decision models: the three question types (Noul, Choice,
+**Phase 1 - Learning.** Study decision models: the three question types (Noul, Choice,
 Score), the hosted and open-model ecosystems, training-free inference, and how to
 evaluate probabilities. Work through the material on a question-answering dataset.
 
-**Phase 2 — Application.** Use decision models to drive an agent that performs a task
+**Phase 2 - Application.** Use decision models to drive an agent that performs a task
 automatically. The concrete task, probably related to Reinforcement Learning, will be
 agreed after the initial study phase.
 

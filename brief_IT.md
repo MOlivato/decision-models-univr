@@ -1,12 +1,12 @@
-# Breve progetto — Decision Models (IT)
+# Breve progetto - Decision Models (IT)
 
 **Titolo.** Tesi e stage sui decision models, una collaborazione tra l'Università di
 Verona e l'Università di Brescia.
 
 ## Contesto e obiettivo
 
-Elia, Alessandro e Matteo Olivato — ricercatore presso l'Università di Brescia e con
-cui Alessandro ha lavorato in passato — stanno valutando una tesi e uno stage congiunti
+Elia, Alessandro e Matteo Olivato - ricercatore presso l'Università di Brescia e con
+cui Alessandro ha lavorato in passato - stanno valutando una tesi e uno stage congiunti
 incentrati sui **decision models**. Il lavoro si articola in una prima fase di
 apprendimento e in una seconda fase in cui si prova a usare i decision models per
 l'esecuzione automatica di un task da parte di un agente, probabilmente legato al
@@ -17,12 +17,12 @@ applicazione su un dataset di question answering.
 
 ## Piano di lavoro
 
-**Fase 1 — Apprendimento.** Studio dei decision models: i tre tipi di domanda (Noul,
+**Fase 1 - Apprendimento.** Studio dei decision models: i tre tipi di domanda (Noul,
 Choice, Score), l'ecosistema di modelli ospitati e open, l'inferenza senza training e
 la valutazione delle probabilità. Il materiale viene applicato a un dataset di
 question answering.
 
-**Fase 2 — Applicazione.** Uso dei decision models per guidare un agente che esegue
+**Fase 2 - Applicazione.** Uso dei decision models per guidare un agente che esegue
 automaticamente un task. Il task concreto, verosimilmente legato al Reinforcement
 Learning, verrà concordato dopo la fase di studio iniziale.
 
