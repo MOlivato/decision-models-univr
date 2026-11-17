@@ -30,8 +30,8 @@ TEXT = "#1F2937"
 
 def canvas(width: float = 10, height: float = 3.6):
     fig, ax = plt.subplots(figsize=(width, height))
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
+    ax.set_xlim(-0.03, 1.03)
+    ax.set_ylim(-0.05, 1.08)
     ax.axis("off")
     return fig, ax
 
@@ -45,6 +45,7 @@ def box(ax, x, y, w, h, text, face=BLUE, edge=BLUE_EDGE, size=10):
         facecolor=face,
         edgecolor=edge,
         linewidth=1.4,
+        clip_on=False,
     )
     ax.add_patch(patch)
     ax.text(
@@ -68,6 +69,7 @@ def arrow(ax, start, end, color="#555555", style="-|>", rad=0.0):
             linewidth=1.4,
             color=color,
             connectionstyle=f"arc3,rad={rad}",
+            clip_on=False,
         )
     )
 
@@ -75,7 +77,7 @@ def arrow(ax, start, end, color="#555555", style="-|>", rad=0.0):
 def save(fig, name: str):
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / name
-    fig.savefig(path, dpi=140, bbox_inches="tight", facecolor="white")
+    fig.savefig(path, dpi=140, bbox_inches="tight", pad_inches=0.12, facecolor="white")
     plt.close(fig)
     print("wrote", path)
 

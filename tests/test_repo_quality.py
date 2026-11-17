@@ -37,6 +37,35 @@ def test_notebook_images_exist():
                 assert (images / name).exists(), f"missing image {name} in {path}"
 
 
+def test_diagram_borders_not_clipped():
+    from PIL import Image
+
+    images = ROOT / "notebooks" / "images"
+    for name in (
+        "decision_model_flow.png",
+        "question_types.png",
+        "backend_choices.png",
+        "qa_to_decision_dataset.png",
+        "training_pipeline.png",
+        "agent_loop.png",
+    ):
+        with Image.open(images / name) as image:
+            image = image.convert("RGB")
+            width, height = image.size
+            pixels = image.load()
+            white = (255, 255, 255)
+            for row in range(height):
+                for col in range(4):
+                    assert pixels[col, row] == white, f"left border clipped in {name}"
+                    assert pixels[width - 1 - col, row] == white, f"right border clipped in {name}"
+            for col in range(width):
+                for row in range(4):
+                    assert pixels[col, row] == white, f"top border clipped in {name}"
+                    assert pixels[col, height - 1 - row] == white, (
+                        f"bottom border clipped in {name}"
+                    )
+
+
 def test_no_uncommon_characters():
     allowed_suffixes = {
         ".md",
