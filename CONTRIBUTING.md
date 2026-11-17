@@ -14,8 +14,8 @@ Keep it minimal and clean.
 - Before opening a PR, run:
 
 ```bash
-uv run ruff format src tests
-uv run ruff check src tests
+uv run ruff format .
+uv run ruff check .
 uv run pytest -q
 ```
 

@@ -43,8 +43,9 @@ packages = ["src/decision_qa"]
 
 [tool.ruff]
 line-length = 100
-src = ["src"]
+src = ["src", "scripts"]
 target-version = "py311"
+extend-exclude = ["notebooks"]
 
 [tool.ruff.format]
 quote-style = "double"

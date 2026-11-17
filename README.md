@@ -28,8 +28,10 @@ so no paid API key is required.
 
 ```
 notebooks/en|it/    zero-to-hero curriculum (identical code, translated prose)
+notebooks/images/   diagrams used by the lessons
 src/decision_qa/    backends, question types, conversion, evaluation, training
-tests/              pipeline, metrics, notebook parity, and character checks
+scripts/            figure generator for the notebook diagrams
+tests/              pipeline, metrics, image, parity, and character checks
 data/               schema documentation and small regenerable samples
 docs/               free papers and saved blog posts as PDF
 configs/            backend configurations (local and free hosted)
@@ -73,9 +75,10 @@ Run scripts with `uv run python ...`. The project is installed in editable mode,
 ## Quality checks
 
 ```bash
-uv run ruff format src tests
-uv run ruff check src tests
+uv run ruff format .
+uv run ruff check .
 uv run pytest -q
+uv run python scripts/make_figures.py   # only if you edit a diagram
 ```
 
 The test suite covers the conversion pipeline, metrics, response parsing, EN/IT

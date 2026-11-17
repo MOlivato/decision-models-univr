@@ -61,9 +61,10 @@ celle di codice: modifica sempre entrambe.
 ## Controlli prima del commit
 
 ```bash
-uv run ruff format src tests
-uv run ruff check src tests
+uv run ruff format .
+uv run ruff check .
 uv run pytest -q
+uv run python scripts/make_figures.py   # solo se modifichi un diagramma
 ```
 
 Tutti e tre devono passare. Inoltre ogni cella di codice modificata deve essere

@@ -23,7 +23,9 @@ uv run jupyter lab
 ## Repository map
 
 - `notebooks/en/` and `notebooks/it/`: the seven lessons, same code cells.
+- `notebooks/images/`: diagrams used by the lessons.
 - `src/decision_qa/`: reusable code. Notebooks import from here.
+- `scripts/make_figures.py`: regenerates the diagrams.
 - `tests/`: pipeline and repository quality checks.
 - `data/`: schema documentation and tiny offline samples.
 - `docs/`: free papers and saved articles as PDF.
@@ -68,13 +70,14 @@ uv run jupyter lab
 ## Definition of done
 
 ```bash
-uv run ruff format src tests
-uv run ruff check src tests
+uv run ruff format .
+uv run ruff check .
 uv run pytest -q
 ```
 
 All three must pass, and every code cell in a changed notebook must execute without
-errors.
+errors. If you change a diagram, run `uv run python scripts/make_figures.py` and
+commit the updated PNG.
 
 Further detail: [README.md](README.md), [CONTRIBUTING.md](CONTRIBUTING.md),
 [data/SCHEMA.md](data/SCHEMA.md), [docs/README.md](docs/README.md).

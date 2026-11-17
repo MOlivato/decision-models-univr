@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,6 +17,24 @@ def test_notebook_code_parity():
         en_code = [cell["source"] for cell in en_cells if cell["cell_type"] == "code"]
         it_code = [cell["source"] for cell in it_cells if cell["cell_type"] == "code"]
         assert en_code == it_code
+
+
+def test_notebook_images_exist():
+    images = ROOT / "notebooks" / "images"
+    expected = {
+        "decision_model_flow.png",
+        "question_types.png",
+        "backend_choices.png",
+        "qa_to_decision_dataset.png",
+        "training_pipeline.png",
+        "agent_loop.png",
+    }
+    assert expected <= {path.name for path in images.glob("*.png")}
+    for folder in ("en", "it"):
+        for path in (ROOT / "notebooks" / folder).glob("*.ipynb"):
+            text = path.read_text(encoding="utf-8")
+            for name in re.findall(r"\.\./images/([A-Za-z0-9_.-]+)", text):
+                assert (images / name).exists(), f"missing image {name} in {path}"
 
 
 def test_no_uncommon_characters():
