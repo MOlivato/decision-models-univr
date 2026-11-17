@@ -156,12 +156,12 @@ def backend_choices():
     ]
     for x, text in items:
         box(ax, x, 0.50, 0.30, 0.34, text, size=9)
-        arrow(ax, (x + 0.15, 0.50), (x + 0.15, 0.32))
+        arrow(ax, (x + 0.15, 0.50), (x + 0.15, 0.29))
     box(
         ax,
-        0.20,
+        0.06,
         0.10,
-        0.60,
+        0.88,
         0.18,
         "Same interface: probabilities for the answers you declare",
         face=GRAY,
@@ -214,6 +214,7 @@ def training_pipeline():
     box(ax, 0.55, 0.10, 0.18, 0.18, "Trainer\none epoch", face=GRAY, edge=GRAY_EDGE, size=9)
     arrow(ax, (0.48, 0.19), (0.55, 0.19))
     arrow(ax, (0.64, 0.28), (0.64, 0.42))
+    ax.text(0.66, 0.35, "answer-token loss", fontsize=9, color=TEXT, ha="left")
     save(fig, "training_pipeline.png")
 
 
