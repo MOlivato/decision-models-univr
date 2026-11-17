@@ -28,7 +28,7 @@ GRAY_EDGE = "#666666"
 TEXT = "#1F2937"
 
 
-def canvas(width: float = 12, height: float = 4):
+def canvas(width: float = 10, height: float = 3.6):
     fig, ax = plt.subplots(figsize=(width, height))
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
@@ -75,13 +75,13 @@ def arrow(ax, start, end, color="#555555", style="-|>", rad=0.0):
 def save(fig, name: str):
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / name
-    fig.savefig(path, dpi=200, bbox_inches="tight", facecolor="white")
+    fig.savefig(path, dpi=140, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     print("wrote", path)
 
 
 def decision_flow():
-    fig, ax = canvas(12, 3.6)
+    fig, ax = canvas(9.5, 3.2)
     box(ax, 0.01, 0.36, 0.24, 0.30, "State\ncontext + question")
     box(
         ax,
@@ -125,7 +125,7 @@ def question_types():
         ),
     ]
     colors = ["#4C78A8", "#F58518", "#54A24B"]
-    fig, axes = plt.subplots(1, 3, figsize=(13, 3.4))
+    fig, axes = plt.subplots(1, 3, figsize=(10.5, 3))
     for ax, (title, labels, values), color in zip(axes, examples, colors):
         ax.barh(labels, values, color=color, height=0.55)
         ax.set_xlim(0, 1)
@@ -139,7 +139,7 @@ def question_types():
 
 
 def backend_choices():
-    fig, ax = canvas(12, 4.2)
+    fig, ax = canvas(9.5, 3.8)
     items = [
         (
             0.01,
@@ -175,7 +175,7 @@ def backend_choices():
 
 
 def qa_to_dm():
-    fig, ax = canvas(14, 5)
+    fig, ax = canvas(11, 4.4)
     box(ax, 0.01, 0.30, 0.16, 0.40, "QA example\ncontext\nquestion\nanswer\nlabel")
     box(ax, 0.21, 0.36, 0.14, 0.28, "convert_*\nfunction", face=GREEN, edge=GREEN_EDGE)
     arrow(ax, (0.17, 0.50), (0.21, 0.50))
@@ -201,7 +201,7 @@ def qa_to_dm():
 
 
 def training_pipeline():
-    fig, ax = canvas(13, 4.2)
+    fig, ax = canvas(10.5, 3.8)
     box(ax, 0.01, 0.42, 0.20, 0.24, "Open base model\nQwen2.5-0.5B")
     box(ax, 0.28, 0.42, 0.20, 0.24, "LoRA adapter\nrank 16", face=GREEN, edge=GREEN_EDGE)
     box(ax, 0.55, 0.42, 0.18, 0.24, "Decision\nbehaviour")
@@ -219,7 +219,7 @@ def training_pipeline():
 
 
 def agent_loop():
-    fig, ax = canvas(13, 5)
+    fig, ax = canvas(10.5, 4.4)
     box(ax, 0.02, 0.40, 0.15, 0.22, "State\nquestion +\nhistory")
     box(
         ax,
